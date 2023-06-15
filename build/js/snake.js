@@ -1,7 +1,7 @@
 "use strict";
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-const SPEED = 250; // milliseconds
+const SPEED = 100; // milliseconds
 const GRID_SIZE = 20;
 var GRID_VALUE;
 (function (GRID_VALUE) {
@@ -52,6 +52,15 @@ class Snake {
         const tail = this.body[this.body.length - 1];
         this.body.push(tail);
     }
+    does_eats_itself() {
+        let collide = false;
+        this.body.slice(1).forEach((position) => {
+            if (position.x === this.head().x && position.y === this.head().y) {
+                collide = true;
+            }
+        });
+        return collide;
+    }
     change_direction(new_direction) {
         if (OPPOSITE_DIRECTION[this.direction] === new_direction)
             return;
@@ -79,8 +88,12 @@ class Game {
             this.place_new_food();
         }
     }
-    snake_eats_food() {
+    does_snake_eats_food() {
         return this.snake.head().x === this.food.x && this.snake.head().y === this.food.y;
+    }
+    does_snake_eats_itself() {
+        console.log("chao");
+        return this.snake.does_eats_itself();
     }
     reset_grid() {
         for (var i = 0; i < GRID_SIZE; i++) {
@@ -93,7 +106,10 @@ class Game {
     update() {
         this.reset_grid();
         this.snake.update();
-        if (this.snake_eats_food()) {
+        if (this.does_snake_eats_itself()) {
+            this.game_over();
+        }
+        if (this.does_snake_eats_food()) {
             this.snake.grow();
             this.place_new_food();
         }
@@ -125,6 +141,10 @@ class Game {
             this.update();
             this.draw();
         }, SPEED);
+    }
+    game_over() {
+        alert('Game Over');
+        window.location.reload();
     }
     handle_keydown(event) {
         if (!(event.key in KEY))

@@ -1,7 +1,7 @@
 const canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement
 const ctx: CanvasRenderingContext2D = canvas.getContext('2d') as CanvasRenderingContext2D
 
-const SPEED = 250 // milliseconds
+const SPEED = 100 // milliseconds
 const GRID_SIZE:number = 20
 enum GRID_VALUE {
   EMPTY = 0,
@@ -61,6 +61,16 @@ class Snake {
     this.body.push(tail)
   }
 
+  does_eats_itself() {
+    let collide: boolean = false
+    this.body.slice(1).forEach((position) => {
+      if (position.x === this.head().x && position.y === this.head().y) {
+        collide = true
+      }
+    })
+    return collide
+  }
+
   change_direction(new_direction: DIRECTION) {
     if (OPPOSITE_DIRECTION[this.direction] === new_direction) return
 
@@ -92,8 +102,13 @@ class Game {
     }
   }
 
-  private snake_eats_food() {
+  private does_snake_eats_food() {
     return this.snake.head().x === this.food.x && this.snake.head().y === this.food.y
+  }
+
+  private does_snake_eats_itself() {
+    console.log("chao")
+    return this.snake.does_eats_itself()
   }
 
   private reset_grid() {
@@ -107,10 +122,15 @@ class Game {
   private update() {
     this.reset_grid()
     this.snake.update()
-    if (this.snake_eats_food()){
+
+    if (this.does_snake_eats_itself()){
+      this.game_over()
+    }
+    if (this.does_snake_eats_food()){
       this.snake.grow()
       this.place_new_food()
     }
+
     this.snake.body.forEach((position) => {
       this.grid[position.x][position.y] = GRID_VALUE.SNAKE
     })
@@ -141,6 +161,11 @@ class Game {
       this.update()
       this.draw()
     }, SPEED)
+  }
+
+  game_over() {
+    alert('Game Over')
+    window.location.reload()
   }
   private handle_keydown(event: KeyboardEvent) {
     if (!(event.key in KEY)) return
