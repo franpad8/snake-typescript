@@ -14,6 +14,13 @@ enum DIRECTION {
   LEFT = 3,
 }
 
+enum KEY {
+  UP = 'ArrowUp',
+  RIGHT = 'ArrowRight',
+  DOWN = 'ArrowDown',
+  LEFT = 'ArrowLeft',
+}
+
 type Position = {x: number, y: number}
 
 class Snake {
@@ -38,6 +45,10 @@ class Snake {
     action[this.direction]()
     this.body.pop()
   }
+
+  move(direction: DIRECTION) {
+    this.direction = direction
+  }
 }
 class Game {
   grid: GRID_VALUE[][]
@@ -45,12 +56,10 @@ class Game {
   constructor() {
     this.grid = []
     this.reset_grid()
-    console.log(this.grid)
     this.snake = new Snake()
   }
 
-  
-  reset_grid() {
+  private reset_grid() {
     for(var i: number = 0; i < GRID_SIZE; i++) {
       this.grid[i] = [];
       for(var j: number = 0; j< GRID_SIZE; j++) {
@@ -58,14 +67,14 @@ class Game {
       }
     }
   }
-  update() {
+  private update() {
     this.reset_grid()
     this.snake.update()
     this.snake.body.forEach((position) => {
       this.grid[position.x][position.y] = GRID_VALUE.SNAKE
     })
   }
-  draw() {
+  private draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     this.grid.forEach((row, x) => {
@@ -77,16 +86,27 @@ class Game {
       })
     })
   }
+
   start() {
+    window.addEventListener('keydown', this.handle_keydown.bind(this))
+  }
+  loop() {
     setInterval(() => {
       this.update()
       this.draw()
-      console.log("bucle")
     }, 1000)
+  }
+  private handle_keydown(event: KeyboardEvent) {
+    const action = {
+      [KEY.UP]: () => { this.snake.move(DIRECTION.UP) },
+      [KEY.RIGHT]: () => { this.snake.move(DIRECTION.RIGHT) },
+      [KEY.DOWN]: () => { this.snake.move(DIRECTION.DOWN) },
+      [KEY.LEFT]: () => { this.snake.move(DIRECTION.LEFT) },
+    }
+    action[event.key as KEY]()
   }
 }
 
 const game = new Game()
-
 game.start()
-
+game.loop()

@@ -15,6 +15,13 @@ var DIRECTION;
     DIRECTION[DIRECTION["DOWN"] = 2] = "DOWN";
     DIRECTION[DIRECTION["LEFT"] = 3] = "LEFT";
 })(DIRECTION || (DIRECTION = {}));
+var KEY;
+(function (KEY) {
+    KEY["UP"] = "ArrowUp";
+    KEY["RIGHT"] = "ArrowRight";
+    KEY["DOWN"] = "ArrowDown";
+    KEY["LEFT"] = "ArrowLeft";
+})(KEY || (KEY = {}));
 class Snake {
     constructor() {
         this.body = [{ x: 0, y: 0 }];
@@ -34,12 +41,14 @@ class Snake {
         action[this.direction]();
         this.body.pop();
     }
+    move(direction) {
+        this.direction = direction;
+    }
 }
 class Game {
     constructor() {
         this.grid = [];
         this.reset_grid();
-        console.log(this.grid);
         this.snake = new Snake();
     }
     reset_grid() {
@@ -69,12 +78,24 @@ class Game {
         });
     }
     start() {
+        window.addEventListener('keydown', this.handle_keydown.bind(this));
+    }
+    loop() {
         setInterval(() => {
             this.update();
             this.draw();
-            console.log("bucle");
         }, 1000);
+    }
+    handle_keydown(event) {
+        const action = {
+            [KEY.UP]: () => { this.snake.move(DIRECTION.UP); },
+            [KEY.RIGHT]: () => { this.snake.move(DIRECTION.RIGHT); },
+            [KEY.DOWN]: () => { this.snake.move(DIRECTION.DOWN); },
+            [KEY.LEFT]: () => { this.snake.move(DIRECTION.LEFT); },
+        };
+        action[event.key]();
     }
 }
 const game = new Game();
 game.start();
+game.loop();
