@@ -1,6 +1,7 @@
 "use strict";
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
+const scoreElement = document.getElementById('score');
 const SPEED = 100; // milliseconds
 const GRID_SIZE = 20;
 var GRID_VALUE;
@@ -80,13 +81,8 @@ class Game {
     place_new_food() {
         const x = Math.floor(Math.random() * GRID_SIZE);
         const y = Math.floor(Math.random() * GRID_SIZE);
-        if (this.grid[x][y] === GRID_VALUE.EMPTY) {
-            this.grid[x][y] = GRID_VALUE.FOOD;
-            this.food = { x, y };
-        }
-        else {
-            this.place_new_food();
-        }
+        this.grid[x][y] = GRID_VALUE.FOOD;
+        this.food = { x, y };
     }
     does_snake_eats_food() {
         return this.snake.head().x === this.food.x && this.snake.head().y === this.food.y;
@@ -103,6 +99,9 @@ class Game {
             }
         }
     }
+    update_score() {
+        scoreElement.innerHTML = ((this.snake.body.length - 1) * 2).toString();
+    }
     update() {
         this.reset_grid();
         this.snake.update();
@@ -112,6 +111,7 @@ class Game {
         if (this.does_snake_eats_food()) {
             this.snake.grow();
             this.place_new_food();
+            this.update_score();
         }
         this.snake.body.forEach((position) => {
             this.grid[position.x][position.y] = GRID_VALUE.SNAKE;
@@ -143,7 +143,7 @@ class Game {
         }, SPEED);
     }
     game_over() {
-        alert('Game Over');
+        alert(`Game Over!\nYour final score is ${scoreElement.innerHTML}`);
         window.location.reload();
     }
     handle_keydown(event) {

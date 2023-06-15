@@ -1,5 +1,6 @@
 const canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement
 const ctx: CanvasRenderingContext2D = canvas.getContext('2d') as CanvasRenderingContext2D
+const scoreElement: HTMLElement = document.getElementById('score') as HTMLElement
 
 const SPEED = 100 // milliseconds
 const GRID_SIZE:number = 20
@@ -94,12 +95,9 @@ class Game {
   private place_new_food() {
     const x = Math.floor(Math.random() * GRID_SIZE)
     const y = Math.floor(Math.random() * GRID_SIZE)
-    if (this.grid[x][y] === GRID_VALUE.EMPTY) {
-      this.grid[x][y] = GRID_VALUE.FOOD
-      this.food = {x, y}
-    } else {
-      this.place_new_food()
-    }
+
+    this.grid[x][y] = GRID_VALUE.FOOD
+    this.food = {x, y}
   }
 
   private does_snake_eats_food() {
@@ -119,6 +117,11 @@ class Game {
       }
     }
   }
+
+  private update_score() {
+    scoreElement.innerHTML = ((this.snake.body.length - 1) * 2).toString()
+  }
+
   private update() {
     this.reset_grid()
     this.snake.update()
@@ -129,6 +132,7 @@ class Game {
     if (this.does_snake_eats_food()){
       this.snake.grow()
       this.place_new_food()
+      this.update_score()
     }
 
     this.snake.body.forEach((position) => {
@@ -164,7 +168,7 @@ class Game {
   }
 
   game_over() {
-    alert('Game Over')
+    alert(`Game Over!\nYour final score is ${scoreElement.innerHTML}`)
     window.location.reload()
   }
   private handle_keydown(event: KeyboardEvent) {
