@@ -26,10 +26,10 @@ class Snake {
     update() {
         const head = this.head();
         const action = {
-            [DIRECTION.UP]: () => { this.body.unshift({ x: head.x, y: head.y - 1 }); },
-            [DIRECTION.RIGHT]: () => { this.body.unshift({ x: head.x + 1, y: head.y }); },
-            [DIRECTION.DOWN]: () => { this.body.unshift({ x: head.x, y: head.y + 1 }); },
-            [DIRECTION.LEFT]: () => { this.body.unshift({ x: head.x - 1, y: head.y }); },
+            [DIRECTION.UP]: () => { this.body.unshift({ x: head.x, y: ((head.y > 0) ? head.y - 1 : GRID_SIZE - 1), }); },
+            [DIRECTION.RIGHT]: () => { this.body.unshift({ x: (head.x + 1) % GRID_SIZE, y: head.y }); },
+            [DIRECTION.DOWN]: () => { this.body.unshift({ x: head.x, y: (head.y + 1) % GRID_SIZE }); },
+            [DIRECTION.LEFT]: () => { this.body.unshift({ x: ((head.x > 0) ? head.x - 1 : GRID_SIZE - 1), y: head.y }); },
         };
         action[this.direction]();
         this.body.pop();
