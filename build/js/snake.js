@@ -1,6 +1,7 @@
 "use strict";
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
+const SPEED = 250; // milliseconds
 const GRID_SIZE = 20;
 var GRID_VALUE;
 (function (GRID_VALUE) {
@@ -15,6 +16,12 @@ var DIRECTION;
     DIRECTION[DIRECTION["DOWN"] = 2] = "DOWN";
     DIRECTION[DIRECTION["LEFT"] = 3] = "LEFT";
 })(DIRECTION || (DIRECTION = {}));
+const OPPOSITE_DIRECTION = {
+    [DIRECTION.UP]: DIRECTION.DOWN,
+    [DIRECTION.RIGHT]: DIRECTION.LEFT,
+    [DIRECTION.DOWN]: DIRECTION.UP,
+    [DIRECTION.LEFT]: DIRECTION.RIGHT,
+};
 var KEY;
 (function (KEY) {
     KEY[KEY["ArrowUp"] = 0] = "ArrowUp";
@@ -41,8 +48,14 @@ class Snake {
         action[this.direction]();
         this.body.pop();
     }
-    move(direction) {
-        this.direction = direction;
+    grow() {
+        const tail = this.body[this.body.length - 1];
+        this.body.push(tail);
+    }
+    change_direction(new_direction) {
+        if (OPPOSITE_DIRECTION[this.direction] === new_direction)
+            return;
+        this.direction = new_direction;
     }
 }
 class Game {
@@ -55,7 +68,7 @@ class Game {
             y: Math.floor(Math.random() * (GRID_SIZE - 1) + 1)
         };
     }
-    place_food() {
+    place_new_food() {
         const x = Math.floor(Math.random() * GRID_SIZE);
         const y = Math.floor(Math.random() * GRID_SIZE);
         if (this.grid[x][y] === GRID_VALUE.EMPTY) {
@@ -63,8 +76,11 @@ class Game {
             this.food = { x, y };
         }
         else {
-            this.place_food();
+            this.place_new_food();
         }
+    }
+    snake_eats_food() {
+        return this.snake.head().x === this.food.x && this.snake.head().y === this.food.y;
     }
     reset_grid() {
         for (var i = 0; i < GRID_SIZE; i++) {
@@ -77,6 +93,10 @@ class Game {
     update() {
         this.reset_grid();
         this.snake.update();
+        if (this.snake_eats_food()) {
+            this.snake.grow();
+            this.place_new_food();
+        }
         this.snake.body.forEach((position) => {
             this.grid[position.x][position.y] = GRID_VALUE.SNAKE;
         });
@@ -104,16 +124,16 @@ class Game {
         setInterval(() => {
             this.update();
             this.draw();
-        }, 500);
+        }, SPEED);
     }
     handle_keydown(event) {
         if (!(event.key in KEY))
             return;
         const action = {
-            [KEY[KEY.ArrowUp]]: () => { this.snake.move(DIRECTION.UP); },
-            [KEY[KEY.ArrowRight]]: () => { this.snake.move(DIRECTION.RIGHT); },
-            [KEY[KEY.ArrowDown]]: () => { this.snake.move(DIRECTION.DOWN); },
-            [KEY[KEY.ArrowLeft]]: () => { this.snake.move(DIRECTION.LEFT); },
+            [KEY[KEY.ArrowUp]]: () => { this.snake.change_direction(DIRECTION.UP); },
+            [KEY[KEY.ArrowRight]]: () => { this.snake.change_direction(DIRECTION.RIGHT); },
+            [KEY[KEY.ArrowDown]]: () => { this.snake.change_direction(DIRECTION.DOWN); },
+            [KEY[KEY.ArrowLeft]]: () => { this.snake.change_direction(DIRECTION.LEFT); },
         };
         action[event.key]();
     }

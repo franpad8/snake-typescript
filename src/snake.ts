@@ -1,6 +1,7 @@
 const canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement
 const ctx: CanvasRenderingContext2D = canvas.getContext('2d') as CanvasRenderingContext2D
 
+const SPEED = 250 // milliseconds
 const GRID_SIZE:number = 20
 enum GRID_VALUE {
   EMPTY = 0,
@@ -9,9 +10,16 @@ enum GRID_VALUE {
 }
 enum DIRECTION {
   UP = 0,
-  RIGHT = 1,
-  DOWN = 2,
-  LEFT = 3,
+  RIGHT,
+  DOWN,
+  LEFT,
+}
+
+const OPPOSITE_DIRECTION = {
+  [DIRECTION.UP] : DIRECTION.DOWN,
+  [DIRECTION.RIGHT] : DIRECTION.LEFT,
+  [DIRECTION.DOWN] : DIRECTION.UP,
+  [DIRECTION.LEFT] : DIRECTION.RIGHT,
 }
 
 enum KEY {
@@ -26,10 +34,12 @@ type Position = {x: number, y: number}
 class Snake {
   body: Position[]
   direction: DIRECTION
+
   constructor() {
     this.body = [{x: 0, y: 0}]
     this.direction = DIRECTION.RIGHT
   }
+
   head() {
     return this.body[0]
   }
@@ -46,8 +56,15 @@ class Snake {
     this.body.pop()
   }
 
-  move(direction: DIRECTION) {
-    this.direction = direction
+  grow() {
+    const tail = this.body[this.body.length - 1]
+    this.body.push(tail)
+  }
+
+  change_direction(new_direction: DIRECTION) {
+    if (OPPOSITE_DIRECTION[this.direction] === new_direction) return
+
+    this.direction = new_direction
   }
 }
 class Game {
@@ -64,16 +81,21 @@ class Game {
     }
   }
 
-  private place_food() {
+  private place_new_food() {
     const x = Math.floor(Math.random() * GRID_SIZE)
     const y = Math.floor(Math.random() * GRID_SIZE)
     if (this.grid[x][y] === GRID_VALUE.EMPTY) {
       this.grid[x][y] = GRID_VALUE.FOOD
       this.food = {x, y}
     } else {
-      this.place_food()
+      this.place_new_food()
     }
   }
+
+  private snake_eats_food() {
+    return this.snake.head().x === this.food.x && this.snake.head().y === this.food.y
+  }
+
   private reset_grid() {
     for(var i: number = 0; i < GRID_SIZE; i++) {
       this.grid[i] = [];
@@ -85,6 +107,10 @@ class Game {
   private update() {
     this.reset_grid()
     this.snake.update()
+    if (this.snake_eats_food()){
+      this.snake.grow()
+      this.place_new_food()
+    }
     this.snake.body.forEach((position) => {
       this.grid[position.x][position.y] = GRID_VALUE.SNAKE
     })
@@ -114,16 +140,16 @@ class Game {
     setInterval(() => {
       this.update()
       this.draw()
-    }, 500)
+    }, SPEED)
   }
   private handle_keydown(event: KeyboardEvent) {
     if (!(event.key in KEY)) return
 
     const action = {
-      [KEY[KEY.ArrowUp]]: () => { this.snake.move(DIRECTION.UP) },
-      [KEY[KEY.ArrowRight]]: () => { this.snake.move(DIRECTION.RIGHT) },
-      [KEY[KEY.ArrowDown]]: () => { this.snake.move(DIRECTION.DOWN) },
-      [KEY[KEY.ArrowLeft]]: () => { this.snake.move(DIRECTION.LEFT) },
+      [KEY[KEY.ArrowUp]]: () => { this.snake.change_direction(DIRECTION.UP) },
+      [KEY[KEY.ArrowRight]]: () => { this.snake.change_direction(DIRECTION.RIGHT) },
+      [KEY[KEY.ArrowDown]]: () => { this.snake.change_direction(DIRECTION.DOWN) },
+      [KEY[KEY.ArrowLeft]]: () => { this.snake.change_direction(DIRECTION.LEFT) },
     }
     action[event.key]()
   }
