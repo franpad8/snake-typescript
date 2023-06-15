@@ -1,4 +1,6 @@
 "use strict";
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
 const GRID_SIZE = 20;
 var GRID_VALUE;
 (function (GRID_VALUE) {
@@ -33,24 +35,46 @@ class Snake {
         this.body.pop();
     }
 }
-const game = {
-    grid: new Array(GRID_SIZE).fill(new Array(GRID_SIZE).fill(GRID_VALUE.EMPTY)),
-    snake: new Snake(),
-    reset_grid: function () { this.grid = new Array(GRID_SIZE).fill(new Array(GRID_SIZE).fill(GRID_VALUE.EMPTY)); },
-    update: function () {
-        this.snake.update();
+class Game {
+    constructor() {
+        this.grid = [];
         this.reset_grid();
+        console.log(this.grid);
+        this.snake = new Snake();
+    }
+    reset_grid() {
+        for (var i = 0; i < GRID_SIZE; i++) {
+            this.grid[i] = [];
+            for (var j = 0; j < GRID_SIZE; j++) {
+                this.grid[i][j] = GRID_VALUE.EMPTY;
+            }
+        }
+    }
+    update() {
+        this.reset_grid();
+        this.snake.update();
         this.snake.body.forEach((position) => {
             this.grid[position.x][position.y] = GRID_VALUE.SNAKE;
         });
-    },
-    draw: function () {
-    },
-    start: function () {
-        while (true) {
+    }
+    draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        this.grid.forEach((row, x) => {
+            row.forEach((value, y) => {
+                if (value === GRID_VALUE.SNAKE) {
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+                }
+            });
+        });
+    }
+    start() {
+        setInterval(() => {
             this.update();
             this.draw();
-        }
-    },
-};
+            console.log("bucle");
+        }, 1000);
+    }
+}
+const game = new Game();
 game.start();
