@@ -1,0 +1,22 @@
+{
+  "name": "snake-typescript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc -w",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/franpad8/snake-typescript.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/franpad8/snake-typescript/issues"
+  },
+  "homepage": "https://github.com/franpad8/snake-typescript#readme"
+}
