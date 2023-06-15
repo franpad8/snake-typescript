@@ -17,10 +17,10 @@ var DIRECTION;
 })(DIRECTION || (DIRECTION = {}));
 var KEY;
 (function (KEY) {
-    KEY["UP"] = "ArrowUp";
-    KEY["RIGHT"] = "ArrowRight";
-    KEY["DOWN"] = "ArrowDown";
-    KEY["LEFT"] = "ArrowLeft";
+    KEY[KEY["ArrowUp"] = 0] = "ArrowUp";
+    KEY[KEY["ArrowRight"] = 1] = "ArrowRight";
+    KEY[KEY["ArrowDown"] = 2] = "ArrowDown";
+    KEY[KEY["ArrowLeft"] = 3] = "ArrowLeft";
 })(KEY || (KEY = {}));
 class Snake {
     constructor() {
@@ -84,14 +84,16 @@ class Game {
         setInterval(() => {
             this.update();
             this.draw();
-        }, 1000);
+        }, 500);
     }
     handle_keydown(event) {
+        if (!(event.key in KEY))
+            return;
         const action = {
-            [KEY.UP]: () => { this.snake.move(DIRECTION.UP); },
-            [KEY.RIGHT]: () => { this.snake.move(DIRECTION.RIGHT); },
-            [KEY.DOWN]: () => { this.snake.move(DIRECTION.DOWN); },
-            [KEY.LEFT]: () => { this.snake.move(DIRECTION.LEFT); },
+            [KEY[KEY.ArrowUp]]: () => { this.snake.move(DIRECTION.UP); },
+            [KEY[KEY.ArrowRight]]: () => { this.snake.move(DIRECTION.RIGHT); },
+            [KEY[KEY.ArrowDown]]: () => { this.snake.move(DIRECTION.DOWN); },
+            [KEY[KEY.ArrowLeft]]: () => { this.snake.move(DIRECTION.LEFT); },
         };
         action[event.key]();
     }

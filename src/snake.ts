@@ -15,10 +15,10 @@ enum DIRECTION {
 }
 
 enum KEY {
-  UP = 'ArrowUp',
-  RIGHT = 'ArrowRight',
-  DOWN = 'ArrowDown',
-  LEFT = 'ArrowLeft',
+  ArrowUp,
+  ArrowRight,
+  ArrowDown,
+  ArrowLeft,
 }
 
 type Position = {x: number, y: number}
@@ -94,16 +94,18 @@ class Game {
     setInterval(() => {
       this.update()
       this.draw()
-    }, 1000)
+    }, 500)
   }
   private handle_keydown(event: KeyboardEvent) {
+    if (!(event.key in KEY)) return
+
     const action = {
-      [KEY.UP]: () => { this.snake.move(DIRECTION.UP) },
-      [KEY.RIGHT]: () => { this.snake.move(DIRECTION.RIGHT) },
-      [KEY.DOWN]: () => { this.snake.move(DIRECTION.DOWN) },
-      [KEY.LEFT]: () => { this.snake.move(DIRECTION.LEFT) },
+      [KEY[KEY.ArrowUp]]: () => { this.snake.move(DIRECTION.UP) },
+      [KEY[KEY.ArrowRight]]: () => { this.snake.move(DIRECTION.RIGHT) },
+      [KEY[KEY.ArrowDown]]: () => { this.snake.move(DIRECTION.DOWN) },
+      [KEY[KEY.ArrowLeft]]: () => { this.snake.move(DIRECTION.LEFT) },
     }
-    action[event.key as KEY]()
+    action[event.key]()
   }
 }
 
