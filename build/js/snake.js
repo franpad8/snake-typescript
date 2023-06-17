@@ -1,6 +1,12 @@
 "use strict";
 const canvas = document.getElementById('canvas');
+if (!(canvas instanceof HTMLCanvasElement)) {
+    throw new Error('Canvas not found');
+}
 const ctx = canvas.getContext('2d');
+if (!(ctx instanceof CanvasRenderingContext2D)) {
+    throw new Error('Canvas context not found');
+}
 const scoreElement = document.getElementById('score');
 const SPEED = 100; // milliseconds
 const GRID_SIZE = 20;
@@ -25,10 +31,10 @@ const OPPOSITE_DIRECTION = {
 };
 var KEY;
 (function (KEY) {
-    KEY[KEY["ArrowUp"] = 0] = "ArrowUp";
-    KEY[KEY["ArrowRight"] = 1] = "ArrowRight";
-    KEY[KEY["ArrowDown"] = 2] = "ArrowDown";
-    KEY[KEY["ArrowLeft"] = 3] = "ArrowLeft";
+    KEY["ArrowUp"] = "ArrowUp";
+    KEY["ArrowRight"] = "ArrowRight";
+    KEY["ArrowDown"] = "ArrowDown";
+    KEY["ArrowLeft"] = "ArrowLeft";
 })(KEY || (KEY = {}));
 class Snake {
     constructor() {
@@ -88,7 +94,6 @@ class Game {
         return this.snake.head().x === this.food.x && this.snake.head().y === this.food.y;
     }
     does_snake_eats_itself() {
-        console.log("chao");
         return this.snake.does_eats_itself();
     }
     reset_grid() {
@@ -147,13 +152,14 @@ class Game {
         window.location.reload();
     }
     handle_keydown(event) {
-        if (!(event.key in KEY))
+        var _a;
+        if (!((_a = Object.values(KEY)) === null || _a === void 0 ? void 0 : _a.includes(event.key)))
             return;
         const action = {
-            [KEY[KEY.ArrowUp]]: () => { this.snake.change_direction(DIRECTION.UP); },
-            [KEY[KEY.ArrowRight]]: () => { this.snake.change_direction(DIRECTION.RIGHT); },
-            [KEY[KEY.ArrowDown]]: () => { this.snake.change_direction(DIRECTION.DOWN); },
-            [KEY[KEY.ArrowLeft]]: () => { this.snake.change_direction(DIRECTION.LEFT); },
+            [KEY.ArrowUp]: () => { this.snake.change_direction(DIRECTION.UP); },
+            [KEY.ArrowRight]: () => { this.snake.change_direction(DIRECTION.RIGHT); },
+            [KEY.ArrowDown]: () => { this.snake.change_direction(DIRECTION.DOWN); },
+            [KEY.ArrowLeft]: () => { this.snake.change_direction(DIRECTION.LEFT); },
         };
         action[event.key]();
     }
