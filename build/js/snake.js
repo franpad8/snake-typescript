@@ -36,6 +36,9 @@ var KEY;
     KEY["ArrowDown"] = "ArrowDown";
     KEY["ArrowLeft"] = "ArrowLeft";
 })(KEY || (KEY = {}));
+const BLACK = '#000';
+const GREEN = '#8cbe02';
+const RED = '#f00';
 class Snake {
     constructor() {
         this.body = [{ x: 0, y: 0 }];
@@ -125,14 +128,16 @@ class Game {
     }
     draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = GREEN;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         this.grid.forEach((row, x) => {
             row.forEach((value, y) => {
                 if (value === GRID_VALUE.SNAKE) {
-                    ctx.fillStyle = '#000';
+                    ctx.fillStyle = BLACK;
                     ctx.fillRect(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
                 }
                 else if (value === GRID_VALUE.FOOD) {
-                    ctx.fillStyle = '#f00';
+                    ctx.fillStyle = BLACK;
                     ctx.fillRect(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
                 }
             });

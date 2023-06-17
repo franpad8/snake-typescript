@@ -41,6 +41,11 @@ enum KEY {
   ArrowLeft = 'ArrowLeft'
 }
 
+type RGB = `#${string}`
+const BLACK:RGB = '#000'
+const GREEN:RGB = '#8cbe02'
+const RED:RGB = '#f00'
+
 type Position = {x: number, y: number}
 
 class Snake {
@@ -152,15 +157,17 @@ class Game {
   }
   private draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = GREEN
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
 
     this.grid.forEach((row, x) => {
       row.forEach((value, y) => {
         if (value === GRID_VALUE.SNAKE) {
-          ctx.fillStyle = '#000'
+          ctx.fillStyle = BLACK
           ctx.fillRect(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE)
         }
         else if (value === GRID_VALUE.FOOD) {
-          ctx.fillStyle = '#f00'
+          ctx.fillStyle = BLACK
           ctx.fillRect(x * GRID_SIZE, y * GRID_SIZE, GRID_SIZE, GRID_SIZE)
         }
       })
